@@ -5,17 +5,18 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class TelegramBot extends TelegramLongPollingBot {
     String key = "";
 
-    public HashMap<Long,User> users = new HashMap<>();
-
-
+    public HashMap<Long, User> users = new HashMap<>();
+    int[][] array = {
+            {1, 2, 3, 4, 5},
+            {6, 7, 8, 9, 10},
+            {11, 12, 13, 14, 15},
+            {16, 17, 18, 19, 20}
+    };
 
 
     @Override
@@ -27,8 +28,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     public String getBotToken() {
         return key; // Замініть на токен вашого бота
     }
-
-
 
 
     @Override
@@ -46,53 +45,161 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (users.get(chatId) == null) {
                 users.put(chatId, new User(update.getMessage().getFrom().getUserName(), chatId));
             }
-            if (userMessage.equals("/showhistory")){
-            }
-            else {
+            if (userMessage.equals("/showhistory")) {
+                System.out.println("123");
+            } else {
                 users.get(chatId).addWord(true, userMessage);
             }
 
 
+            sendButtons(chatId);
+            //  getInfoFunction(chatId, userMessage, users);
+            //  RockScissorsPaperGame(chatId, userMessage, users);
+//            helpFunction(chatId, userMessage);
+            //           historyFunction(chatId,userMessage,users);
+//            NumberGuesser(chatId,userMessage, users);
+            //   send(chatId,"");
+            RockScissorsPaperGame(chatId, userMessage, users);
 
-            getInfoFunction(chatId, userMessage, users);
-          //  RockScissorsPaperGame(chatId, userMessage, users);
-            helpFunction(chatId, userMessage);
-            historyFunction(chatId,userMessage,users);
-            NumberGuesser(chatId,userMessage, users);
-         //   send(chatId,"");
+
+        } else if (update.hasCallbackQuery()) {
+            boolean a = true;
+            String callbackData = update.getCallbackQuery().getData();
+            String userMessage = update.getCallbackQuery().getMessage().toString();
+            long chatId = update.getCallbackQuery().getMessage().getChatId();
+            int x = users.get(chatId).getX();
+            int y = users.get(chatId).getY();
+
+            for (int i = 0; i < array.length; i++) {
+                for (int j = 0; j < array.length; j++) {
+                    if (array[i][j] == DB.getDb() && a) {
+                        y = i;
+                        x = j;
+                        a = false;
+                    }
+                }
+            }
+
+            if (callbackData.equals("up")) {
+                if (y > 0) {
+                    y--;
+                    users.get(chatId).setY(y);
+                    send(chatId, "Твоя ячейка:\n" + array[y][x]);
+                    DB.SetDb(array[y][x]);
+                } else {
+                    send(chatId, "Далі не буде");
+                }
+
+            } else if (callbackData.equals("down")) {
+                if (y < array.length - 1) {
+                    y++;
+                    users.get(chatId).setY(y);
+                    send(chatId, "Твоя ячейка:\n" + array[y][x]);
+                    DB.SetDb(array[y][x]);
+                } else {
+                    send(chatId, "Далі не буде");
+                }
+
+            } else if (callbackData.equals("right")) {
+                if (x < array[y].length - 1) {
+                    x++;
+                    users.get(chatId).setX(x);
+                    send(chatId, "Твоя ячейка:\n" + array[y][x]);
+                    DB.SetDb(array[y][x]);
+                } else {
+                    send(chatId, "Далі не буде");
+                }
+
+            } else if (callbackData.equals("left")) {
+                if (x > 0) {
+                    x--;
+                    users.get(chatId).setX(x);
+                    send(chatId, "Твоя ячейка:\n" + array[y][x]);
+                    DB.SetDb(array[y][x]);
+                }
 
 
-
-        }else {
+            }
+        } else {
             System.out.println("Received non-text message");
         }
     }
 
+    public void sendButtons(long chatId) {
+//        InlineKeyboardButton addInfoButton = new InlineKeyboardButton();
+//        addInfoButton.setText("➕ Додати в історію");
+//        addInfoButton.setCallbackData("add_info");
+//
+//        InlineKeyboardButton removeHistoryButton = new InlineKeyboardButton();
+//        removeHistoryButton.setText("🗑️ Очистити історію");
+//        removeHistoryButton.setCallbackData("remove_history");
+//
+//        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+//        rows.add(Arrays.asList(addInfoButton));
+//        rows.add(Arrays.asList(removeHistoryButton));
+
+
+//        InlineKeyboardButton addUpButton = new InlineKeyboardButton();
+//        addUpButton.setText("↑");
+//        addUpButton.setCallbackData("up");
+//
+//        InlineKeyboardButton addDownButton = new InlineKeyboardButton();
+//        addDownButton.setText("↓");
+//        addDownButton.setCallbackData("down");
+//
+//        InlineKeyboardButton addRightButton = new InlineKeyboardButton();
+//        addRightButton.setText("→");
+//        addRightButton.setCallbackData("right");
+//
+//        InlineKeyboardButton addLeftButton = new InlineKeyboardButton();
+//        addLeftButton.setText("←");
+//        addLeftButton.setCallbackData("left");
+//
+//        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+//        rows.add(Arrays.asList(addUpButton));
+//        rows.add(Arrays.asList(addRightButton));
+//        rows.add(Arrays.asList(addLeftButton));
+//        rows.add(Arrays.asList(addDownButton));
+//
+//        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+//        markup.setKeyboard(rows);
+//
+//        SendMessage message = new SendMessage();
+//        message.setChatId(chatId);
+//        message.setText("Game very very funny");
+//        message.setReplyMarkup(markup);
+//
+//        try {
+//            execute(message);
+//        } catch (TelegramApiException e) {
+//            e.printStackTrace();
+//        }
+    }
 
     public void getInfoFunction(long chatId, String userMessage, HashMap<Long, User> users) {
         User user = users.get(chatId);
 
-        if (userMessage.equals("/showinfo")){
-            send(chatId,"Your info:\n"+"Age: "+user.getAge()+"\n"+"Birthday: "+user.getBirthDay());
+        if (userMessage.equals("/showinfo")) {
+            send(chatId, "Your info:\n" + "Age: " + user.getAge() + "\n" + "Birthday: " + user.getBirthDay());
         }
 
-        if (userMessage.equals("/stopinfo")){
-            user.setInfoStage(0);
+        if (userMessage.equals("/stopinfo")) {
+            user.setInfoStageForRsp(0);
             send(chatId, "Info setting stopped");
         }
 
-        if (userMessage.equals("/setinfo")){
-            user.setInfoStage(1);
-            send(chatId,"Put your age below");
+        if (userMessage.equals("/setinfo")) {
+            user.setInfoStageForRsp(1);
+            send(chatId, "Put your age below");
             return;
         }
 
 
-        if (user.getInfoStage() == 1){
+        if (user.getInfoStageForRsp() == 1) {
             try {
                 int age = Integer.parseInt(userMessage);
                 user.setAge(age);
-                user.setInfoStage(2);
+                user.setInfoStageForRsp(2);
                 send(chatId, " Put your birthday (e.g. 11.11.2011):");
             } catch (NumberFormatException e) {
                 send(chatId, "Something gone wrong, try again!");
@@ -100,48 +207,168 @@ public class TelegramBot extends TelegramLongPollingBot {
             return;
         }
 
-        if (user.getInfoStage() == 2){
+        if (user.getInfoStageForRsp() == 2) {
             user.setBirthDay(userMessage);
-            user.setInfoStage(0);
+            user.setInfoStageForRsp(0);
         }
 
 
-      //  send(chatId, user.getAge()+"\n"+user.getBirthDay());
+        //  send(chatId, user.getAge()+"\n"+user.getBirthDay());
 
     }
 
-    boolean isRSPGameStart = false;
+    String a;
+    String b;
+    ArrayList<User> userArrayList = new ArrayList<>();
+    int newRandom = 0;
+    HashMap<Integer, String> RSPMap = new HashMap<>();
+
     public void RockScissorsPaperGame(long chatId, String userMessage, HashMap<Long, User> users) {
         User user = users.get(chatId);
-        String rock = "rock";
-        String scissors = "scissors";
-        String paper = "paper";
 
-       if (userMessage.equals("/startRSPgame")){
-           send(chatId, "Your chose:"+ rock+", "+scissors+", "+paper ); //в процесі розробки
-       }
+//        String rock = "rock";
+//        String scissors = "scissors";
+//        String paper = "paper";
+//
+//        RSPMap.put(1,rock);
+//        RSPMap.put(2,scissors);
+//        RSPMap.put(3,paper);
+
+//
+//        if (newRandom == -1) {
+//            Random random = new Random();
+//            user.setRSPChose(random.nextInt(3)+1);
+//        }
+
+        if (userMessage.equals("/startRSPgame")) {
+            userArrayList.add(user);
+            send(chatId, "Wait for game to start");
+            user.setInfoStageForRsp(0);
+        }
+
+        User user1 = null;
+        User user2 = null;
+        if (userArrayList.size() % 2 == 0 && user.getInfoStageForRsp() == 0) {
+            user1 = userArrayList.get(userArrayList.size() - 2);
+            user2 = userArrayList.get(userArrayList.size() - 1);
+
+            if (user1 != user2) {
+                user1.setInfoStageForRsp(1);
+                user2.setInfoStageForRsp(1);
+
+                ;
+                send(user1.getChatId(), "Your playing against: " + user2.getName() + "\nChose: rock paper or scissors");
+                send(user2.getChatId(), "Your playing against: " + user1.getName() + "\nChose: rock paper or scissors");
+            }
+
+        else {
+            send(user1.getChatId(), "You can't play with your self");
+            userArrayList.remove(user1);
+            userArrayList.remove(user2);}
+
+        }
+
+        if (user.getInfoStageForRsp() == 1) {
+            String choice = userMessage.toLowerCase();
+            if (choice.equals("rock") || choice.equals("paper") || choice.equals("scissors")) {
+                user.setInfoStageForRspSecond(choice);
+                user.setInfoStageForRsp(2);
+                send(user.getChatId(), "You chose: " + choice);
+            } else {
+                send(user.getChatId(), "Invalid choice. Type: rock, paper or scissors");
+            }
+        }
+
+
+        if (userArrayList.size() >= 2) {
+            for (int i = 0; i < userArrayList.size() - 1; i += 2) {
+                 user1 = userArrayList.get(i);
+                 user2 = userArrayList.get(i + 1);
+
+                if (user1.getInfoStageForRsp() == 2 && user2.getInfoStageForRsp() == 2) {
+                    String choice1 = user1.getInfoStageForRspSecond();
+                    String choice2 = user2.getInfoStageForRspSecond();
+
+                    String result1;
+                    String result2;
+
+                    if (choice1.equals(choice2)) {
+                        result1 = "Draw";
+                        result2 = "Draw";
+                    } else if (
+                            (choice1.equals("rock") && choice2.equals("scissors")) ||
+                                    (choice1.equals("scissors") && choice2.equals("paper")) ||
+                                    (choice1.equals("paper") && choice2.equals("rock"))
+                    ) {
+                        result1 = "You win!";
+                        result2 = "You lose!";
+                    } else {
+                        result1 = "You lose!";
+                        result2 = "You win!";
+                    }
+
+                    if (user.getInfoStageForRsp() == 2) {
+                        send(user1.getChatId(), "You chose: " + choice1 + "\nOpponent chose: " + choice2 + "\n" + result1 + "\n" +
+                                "if you want to continued write /restartrspgame if not /stoprspgame");
+                        send(user2.getChatId(), "You chose: " + choice2 + "\nOpponent chose: " + choice1 + "\n" + result2 + "\n" +
+                                "if you want to continued write /restartrspgame if not /stoprspgame");
+                        user.setInfoStageForRsp(3);
+                    }
+
+
+
+                if (user.getInfoStageForRsp() == 3 && userMessage.equals("/stoprspgame")) {
+                    user1.setInfoStageForRsp(-1);
+                    user2.setInfoStageForRsp(-1);
+                    user1.setInfoStageForRspSecond("");
+                    user2.setInfoStageForRspSecond("");
+                    send(user.getChatId(), "Game stopped");
+
+                    userArrayList.remove(user1);
+                    userArrayList.remove(user2);
+                    break;
+                }
+                    if (user.getInfoStageForRsp() == 3 && userMessage.equals("/restartrspgame")){
+                        user.setInfoStageForRsp(0);
+                        send(user.getChatId(),"Wait for game to start");
+                    }
+                }
+            }
+        }
+    }
 
 
 
 
+
+
+    public int getUserChoice(User user){
+        return Integer.parseInt(String.valueOf(user.getWords().getLast()));
     }
 
 
     public void helpFunction(long chatId, String userMessage) {
         if (userMessage.equals("/commandinfo")){
-            send(chatId,"All useable commands:\n/deletehistory\n/showhistory\n/startnumberguesser\n/stopnumberguesser\n/newnumber\n/commandinfo");
+            send(chatId,"All useable commands:\n/deletehistory\n/showhistory\n/startnumberguesser\n/stopnumberguesser\n/newnumber" +
+                    "\n/startRSPgame\n/commandinfo");
+
         }
     }
 
 
-    public void historyFunction(long chatId, String userMessage, HashMap<Long, User> users) {
+    public void deleteHistoryFunction(long chatId, String userMessage, HashMap<Long, User> users) {
                 User user = users.get(chatId);
                 List<Msg> history = user.getWords();
-
-                if (userMessage.equals("/deletehistory")){
-                    user.getWords().removeAll(history);
-                    send(chatId, "HistoryDeleted");
+                for (Msg msg : history){
+                    user.getWords().remove(msg);
                 }
+                send(chatId, "History cleared");
+    }
+
+    public void historyFunction(long chatId, String userMessage, HashMap<Long, User> users) {
+
+                User user = users.get(chatId);
+                List<Msg> history = user.getWords();
 
                 if (userMessage.equals("/showhistory")) {
                     if (history.isEmpty()) {
@@ -232,7 +459,11 @@ class User{
     private String RSPchose = "-";
     private int age = 0;
     private String birthDay = "-";
-    private int infoStage = 0;
+    private int infoStageForRsp = 0;
+    private String infoStageForRspSecond;
+    private int x = 0;
+    private int y = 1;
+    private int RSPChose = 0;
 
     public User(String name, long chatId) {
         this.name = name;
@@ -274,12 +505,60 @@ class User{
     public void setBirthDay(String birthDay) {
         this.birthDay = birthDay;
     }
-    public int getInfoStage() {
-        return infoStage;
+    public int getInfoStageForRsp() {
+        return infoStageForRsp;
     }
 
-    public void setInfoStage(int infoStage) {
-        this.infoStage = infoStage;
+    public void setInfoStageForRsp(int infoStageForRsp) {
+        this.infoStageForRsp = infoStageForRsp;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getRSPChose() {
+        return RSPChose;
+    }
+
+    public void setRSPChose(int RSPChose) {
+        this.RSPChose = RSPChose;
+    }
+
+    public long getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(long chatId) {
+        this.chatId = chatId;
+    }
+
+    public String getInfoStageForRspSecond() {
+        return infoStageForRspSecond;
+    }
+
+    public void setInfoStageForRspSecond(String infoStageForRspSecond) {
+        this.infoStageForRspSecond = infoStageForRspSecond;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
 
